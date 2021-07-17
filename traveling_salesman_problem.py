@@ -1,30 +1,44 @@
-from itertools import combinations
 from math import floor, sqrt
+from bitarray import bitarray
 
 def tsp(sub_sets, c, n):
     A = {s: [None for _ in range(n)] for s in sub_sets}
     for s in sub_sets:
         A[s][0] = float("inf")
     for s in sub_sets:
-        if s == {0}:
+        if s == "1" + "0"*(n-1):
             A[s][0] = 0
             break
-    for m in range(1, n+1): # subproblem size
+    for m in range(1, n+1): # subproblem size 
+        print(f"{n+1-m} iteration(s) remaining")
         for s in sub_sets:
-            if len(s) == m and 0 in s:
-                for j in s:
-                    if j != 0:
-                        A[s][j] = min(A[s.difference({j})][k] + c[k][j] for k in s if k != j)
-    return min(A[frozenset({x for x in range(n)})][j] + c[j][0] for j in range(1, n))
+            s_nodes =  {int(i):int(i) for i, j in enumerate(s) if int(j)} # internal nodes
+            if len(s_nodes) == m and 0 in s_nodes:
+                for i in s_nodes:
+                    if i != 0:
+                        s_prime = "".join(b if j!=i else "0" for j, b in enumerate(s))
+                        A[s][i] = min(A[s_prime][k] + c[k][i] for k in s_nodes if k != i)
+    return min(A["1"*n][j] + c[j][0] for j in range(1, n))
     
+def bitmasks(n, m):
+    if m < n:
+        if m > 0:
+            for x in bitmasks(n-1,m-1):
+                yield bitarray([1]) + x
+            for x in bitmasks(n-1,m):
+                yield bitarray([0]) + x
+        else:
+            yield n * bitarray('0')
+    else:
+        yield n * bitarray('1')
 
 def all_subsets(n):
-    arr = [x for x in range(n)]
     sub_sets = []
-    for i in range(n + 1):
-        for element in combinations(arr, i):
-            sub_sets.append(frozenset(element))
+    for i in range(n+1):
+        for b in bitmasks(n, i):
+            sub_sets.append(b.to01())
     assert len(sub_sets) == 2**n
+    print("Computed subsets...")
     return sub_sets
 
 def distances(coordinates, n):
