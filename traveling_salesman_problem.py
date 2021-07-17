@@ -51,7 +51,7 @@ def distances(coordinates, n):
 
 if __name__ == "__main__":
     coordinates = []
-    with open("tsp_test1.txt", "r") as f:
+    with open("tsp.txt", "r") as f:
         f = f.readlines()
         n = int(f[0])
         for l in f[1:]:
