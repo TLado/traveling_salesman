@@ -1,5 +1,4 @@
 from math import floor, sqrt
-from bitarray import bitarray
 
 def tsp(sub_sets, c, n):
     A = {s: [None for _ in range(n)] for s in sub_sets}
@@ -24,19 +23,19 @@ def bitmasks(n, m):
     if m < n:
         if m > 0:
             for x in bitmasks(n-1,m-1):
-                yield bitarray([1]) + x
+                yield "1" + x
             for x in bitmasks(n-1,m):
-                yield bitarray([0]) + x
+                yield "0" + x
         else:
-            yield n * bitarray('0')
+            yield n * "0"
     else:
-        yield n * bitarray('1')
+        yield n * "1"
 
 def all_subsets(n):
     sub_sets = []
     for i in range(n+1):
         for b in bitmasks(n, i):
-            sub_sets.append(b.to01())
+            sub_sets.append(b)
     assert len(sub_sets) == 2**n
     print("Computed subsets...")
     return sub_sets
@@ -52,7 +51,7 @@ def distances(coordinates, n):
 
 if __name__ == "__main__":
     coordinates = []
-    with open("tsp.txt", "r") as f:
+    with open("tsp_test1.txt", "r") as f:
         f = f.readlines()
         n = int(f[0])
         for l in f[1:]:
